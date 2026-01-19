@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khảo sát thói quen chi tiêu Tết - Sổ Quỹ Việt</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #E91E63 0%, #FF5722 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .logo {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #f0f0f0;
+            border-radius: 3px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #E91E63, #FF5722);
+            transition: width 0.3s ease;
+            border-radius: 3px;
+        }
+
+        .question-section {
+            display: none;
+        }
+
+        .question-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #E91E63;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .question {
+            margin-bottom: 25px;
+        }
+
+        .question-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+
+        .question-hint {
+            font-size: 13px;
+            color: #888;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option:hover {
+            border-color: #E91E63;
+            background: #FFF5F7;
+        }
+
+        .option input[type="radio"],
+        .option input[type="checkbox"] {
+            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+            accent-color: #E91E63;
+        }
+
+        .option input[type="radio"]:checked + span,
+        .option input[type="checkbox"]:checked + span {
+            color: #E91E63;
+            font-weight: 600;
+        }
+
+        .option:has(input:checked) {
+            border-color: #E91E63;
+            background: #FFF5F7;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: border-color 0.2s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #E91E63;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .kakeibo-card {
+            background: linear-gradient(135deg, #FFF5F7 0%, #FFFFFF 100%);
+            border: 2px solid #E91E63;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .kakeibo-card h4 {
+            color: #E91E63;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .kakeibo-card p {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .slider-container {
+            margin: 15px 0;
+        }
+
+        .slider-value {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #E91E63;
+            margin: 10px 0;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #E91E63;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(233, 30, 99, 0.4);
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-prev {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .btn-prev:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, #E91E63 0%, #FF5722 100%);
+            color: white;
+        }
+
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(233, 30, 99, 0.4);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .success-message {
+            text-align: center;
+            padding: 50px 30px;
+        }
+
+        .success-message .emoji {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .success-message h2 {
+            color: #4CAF50;
+            margin-bottom: 15px;
+        }
+
+        .success-message p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8f8f8;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .required {
+            color: #E91E63;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 { font-size: 22px; }
+            .content { padding: 20px; }
+            .buttons { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🧧</div>
+            <h1>Khảo sát Thói quen Chi tiêu Tết</h1>
+            <p>Sổ Quỹ Việt - Ứng dụng Kakeibo Việt hóa</p>
+        </div>
+
+        <div class="content">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress"></div>
+            </div>
+
+            <form id="surveyForm">
+            <!-- Để kết nối Formspree:
+                 1. Đăng ký: https://formspree.io/
+                 2. Thêm action="https://formspree.io/f/YOUR_FORM_ID" method="POST"
+                 3. Xóa event listener submit bên dưới
+            -->
+                <!-- PHẦN 1: THÔNG TIN CHUNG -->
+                <div class="question-section active" data-section="1">
+                    <div class="section-title">📋 Phần 1: Thông tin chung</div>
+
+                    <div class="question">
+                        <label class="question-label">1. Độ tuổi của bạn? <span class="required">*</span></label>
+                        <div class="options">
+                            <label class="option"><input type="radio" name="age" value="18-24" required> <span>18-24 tuổi</span></label>
+                            <label class="option"><input type="radio" name="age" value="25-34"> <span>25-34 tuổi</span></label>
+                            <label class="option"><input type="radio" name="age" value="35-44"> <span>35-44 tuổi</span></label>
+                            <label class="option"><input type="radio" name="age" value="45-54"> <span>45-54 tuổi</span></label>
+                            <label class="option"><input type="radio" name="age" value="55+"> <span>55+ tuổi</span></label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-label">2. Nghề nghiệp hiện tại? <span class="required">*</span></label>
+                        <div class="options">
+                            <label class="option"><input type="radio" name="job" value="student" required> <span>Học sinh/Sinh viên</span></label>
+                            <label class="option"><input type="radio" name="job" value="office"> <span>Nhân viên văn phòng</span></label>
+                            <label class="option"><input type="radio" name="job" value="business"> <span>Kinh doanh tự do</span></label>
+                            <label class="option"><input type="radio" name="job" value="homemaker"> <span>Nội trợ</span></label>
+                            <label class="option"><input type="radio" name="job" value="retired"> <span>Đã nghỉ hưu</span></label>
+                            <label class="option"><input type="radio" name="job" value="other"> <span>Khác</span></label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-label">3. Thu nhập trung bình hàng tháng? <span class="required">*</span></label>
+                        <div class="options">
+                            <label class="option"><input type="radio" name="income" value="<5M" required> <span>Dưới 5 triệu</span></label>
+                            <label class="option"><input type="radio" name="income" value="5-10M"> <span>5-10 triệu</span></label>
+                            <label class="option"><input type="radio" name="income" value="10-20M"> <span>10-20 triệu</span></label>
+                            <label class="option"><input type="radio" name="income" value="20-50M"> <span>20-50 triệu</span></label>
+                            <label class="option"><input type="radio" name="income" value=">50M"> <span>Trên 50 triệu</span></label>
+                            <label class="option"><input type="radio" name="income" value="variable"> <span>Không có thu nhập cố định</span></label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-label">4. Bạn thường đón Tết ở đâu? <span class="required">*</span></label>
+                        <div class="options">
+                            <label class="option"><input type="radio" name="tet_location" value="hometown" required> <span>Tại quê nhà</span></label>
+                            <label class="option"><input type="radio" name="tet_location" value="city"> <span>Tại thành phố nơi làm việc</span></label>
+                            <label class="option"><input type="radio" name="tet_location" value="wife_hometown"> <span>Về quê ngoại</span></label>
+                            <label class="option"><input type="radio" name="tet_location" value="travel"> <span>Du lịch trong dịp Tết</span></label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PHẦN 2: NGÂN SÁCH TẾT -->
+                <div class="question-section" data-section="2">
+                    <div class="section-title">💰 Phần 2: Ngân sách Tết</div>
+
+                    <div class="question">
+                        <label class="question-label">5. Bạn thường dành bao nhiêu tiền cho dịp Tết? <span class="required">*</span></label>
+                        <div class="options">
+                            <label class="option"><input type="radio" name="tet_budget" value="<5M" required> <span>Dưới 5 triệu</span></label>
+                            <label class="option"><input type="radio" name="tet_budget" value="5-10M"> <span>5-10 triệu</span></label>
+                            <label class="option"><input type="radio" name="tet_budget" value="10-20M"> <span>10-20 triệu</span></label>
+                            <label class="option"><input type="radio" name="tet_budget" value="20-50M"> <span>20-50 triệu</span></label>
+                            <label class="option"><input type="radio" name="tet_budget" value=">50M"> <span>Trên 50 triệu</span></label>
+                            <label class="option"><input type="radio" name="tet_budget" value="variable"> <span>Không xác định/Mỗi năm khác nhau</span></label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-label">6. Bạn có lập ngân sách cho Tết không? <span class="required">*</span></label>
+                        <div class="options">
+                            <label class="option"><input type="radio" name="has_budget" value="detailed" required> <span>Có, luôn lập kế hoạch chi tiết</span></label>
+                            <label class="option"><input type="radio" name="has_budget" value="rough"> <span>Có, nhưng chỉ ước lượng chung</span></label>
+                            <label class="option"><input type="radio" name="has_budget" value="sometimes"> <span>Thỉnh thoảng có lập</span></label>
+                            <label class="option"><input type="radio" name="has_budget" value="no"> <span>Không, chi thoải mái rồi tính</span></label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-label">7. Nguồn tiền cho Tết của bạn đến từ đâu? <span class="required">*</span></label>
+                        <div class="options">
+                            <label class="option"><input type="checkbox" name="money_source" value="salary13"> <span>Lương tháng 13</span></label>
+                            <label class="option"><input type="checkbox" name="money_source" value="bonus"> <span>Thưởng Tết</span></label>
+                            <label class="option"><input type="checkbox" name="money_source" value="savings"> <span>Tiết kiệm cả năm</span></label>
+                            <label class="option"><input type="checkbox" name="money_source" value="business"> <span>Thưởng doanh thu</span></label>
+                            <label class="option"><input type="checkbox" name="money_source" value="debt"> <span>Vay mượn</span></label>
+                            <label class="option"><input type="checkbox" name="money_source" value="lixi"> <span>Tiền lì xì nhận được</span></label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PHẦN 3: KAKEIBO 4 NHÓM -->
+                <div class="question-section" data-section="3">
+                    <div class="section-title">🎯 Phần 3: Phân loại chi tiêu theo Kakeibo</div>
+                    <p style="margin-bottom: 20px; color: #666;">Kakeibo phân loại chi tiêu thành 4 nhóm. Vui lòng ước lượng phần trăm ngân sách Tết cho từng nhóm:</p>
+
+                    <div class="kakeibo-card">
+                        <h4>🔴 NHÓM "CẦN" - Các khoản không thể thiếu</h4>
+                        <p>Tiền nhà, điện nước, trả nợ, lễ bắt buộc, mừng tuổi người lớn tuổi...</p>
+                        <div class="slider-container">
+                            <div class="slider-value" id="needValue">40%</div>
+                            <input type="range" name="kakeibo_need" id="needSlider" min="0" max="100" value="40" oninput="updateSlider('need')">
+                            <div class="slider-labels">
+                                <span>0%</span>
+                                <span>50%</span>
+                                <span>100%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kakeibo-card">
+                        <h4>🟡 NHÓM "MUỐN" - Điều mình thích nhưng không cần thiết</h4>
+                        <p>Mua sắm quần áo mới, đồ trang trí, du lịch, ăn uống sang trọng...</p>
+                        <div class="slider-container">
+                            <div class="slider-value" id="wantValue">25%</div>
+                            <input type="range" name="kakeibo_want" id="wantSlider" min="0" max="100" value="25" oninput="updateSlider('want')">
+                            <div class="slider-labels">
+                                <span>0%</span>
+                                <span>50%</span>
+                                <span>100%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kakeibo-card">
+                        <h4>🟢 NHÓM "NÊN" - Đầu tư cho phát triển và xã hội</h4>
+                        <p>Mua sách, học kỹ năng mới, quà tặng có ý nghĩa, từ thiện...</p>
+                        <div class="slider-container">
+                            <div class="slider-value" id="shouldValue">20%</div>
+                            <input type="range" name="kakeibo_should" id="shouldSlider" min="0" max="100" value="20" oninput="updateSlider('should')">
+                            <div class="slider-labels">
+                                <span>0%</span>
+                                <span>50%</span>
+                                <span>100%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kakeibo-card">
+                        <h4>🔵 NHÓM "CÓ THỂ" - Có thể hoãn hoặc không làm</h4>
+                        <p>Mua đồ điện tử đắt tiền, redesign nhà, mua sắm bừa bãi...</p>
+                        <div class="slider-container">
+                            <div class="slider-value" id="canValue">15%</div>
+                            <input type="range" name="kakeibo_can" id="canSlider" min="0" max="100" value="15" oninput="updateSlider('can')">
+                            <div class="slider-labels">
+                                <span>0%</span>
+                                <span>50%</span>
+                                <span>100%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PHẦN 4: THÓI QUEN CHI TIÊU -->
+                <div class="question-section" data-section="4">
+                    <div class="section-title">🛍️ Phần 4: Thói quen chi tiêu cụ thể</div>
+
+                    <div class="question">
+                        <label class="question-label">12. Khoản chi tiêu LỚN NHẤT dịp Tết của bạn là gì? <span class="required">*</span></label>
+                        <div class="options">
+                            <label class="option"><input type="radio" name="biggest_spending" value="clothes" required> <span>Mua sắm quần áo/mỹ phẩm</span></label>
+                            <label class="option"><input type="radio" name="biggest_spending" value="lixi"> <span>Tiền lì xì</span></label>
+                            <label class="option"><input type="radio" name="biggest_spending" value="food"> <span>Đồ ăn/đồ uống/du xuân</span></label>
+                            <label class="option"><input type="radio" name="biggest_spending" value="travel"> <span>Du lịch/phiêu lưu</span></label>
+                            <label class="option"><input type="radio" name="biggest_spending" value="electronics"> <span>Điện tử/điện lạnh</span></label>
+                            <label class="option"><input type="radio" name="biggest_spending" value="decor"> <span>Decor/trang trí nhà cửa</span></label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-label">13. Bạn có hay mua sắm bừa bãi dịp Tết không? <span class="required">*</span></label>
+                        <div class="options">
+                            <label class="option"><input type="radio" name="impulse_buy" value="never" required> <span>Không bao giờ, luôn kiên quyết</span></label>
+                            <label class="option"><input type="radio" name="impulse_buy" value="sometimes"> <span>Thỉnh thoảng, khi thấy đồ đẹp</span></label>
+                            <label class="option"><input type="radio" name="impulse_buy" value="often"> <span>Thường xuyên, mua rất nhiều</span></label>
+                            <label class="option"><input type="radio" name="impulse_buy" value="uncontrolled"> <span>Mua không kiểm soát</span></label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-label">14. Sau Tết, bạn thường cảm thấy thế nào về tài chính? <span class="required">*</span></label>
+                        <div class="options">
+                            <label class="option"><input type="radio" name="after_tet_feeling" value="great" required> <span>Rất hài lòng, còn dư tiền</span></label>
+                            <label class="option"><input type="radio" name="after_tet_feeling" value="okay"> <span>Ổn định, trong tầm kiểm soát</span></label>
+                            <label class="option"><input type="radio" name="after_tet_feeling" value="worried"> <span>Hơi lo lắng, tiêu quá nhiều</span></label>
+                            <label class="option"><input type="radio" name="after_tet_feeling" value="stressed"> <span>Rất stress, nợ nần</span></label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-label">15. Bạn có theo dõi/ghi chép chi tiêu Tết không? <span class="required">*</span></label>
+                        <div class="options">
+                            <label class="option"><input type="radio" name="track_spending" value="detailed" required> <span>Có, ghi chép rất chi tiết</span></label>
+                            <label class="option"><input type="radio" name="track_spending" value="rough"> <span>Có, ghi chép đại khái</span></label>
+                            <label class="option"><input type="radio" name="track_spending" value="sometimes"> <span>Thỉnh thoảng có ghi</span></label>
+                            <label class="option"><input type="radio" name="track_spending" value="never"> <span>Không bao giờ</span></label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PHẦN 5: Ý KIẾN CHO ỨNG DỤNG -->
+                <div class="question-section" data-section="5">
+                    <div class="section-title">📱 Phần 5: Ý kiến cho ứng dụng Sổ Quỹ Việt</div>
+
+                    <div class="question">
+                        <label class="question-label">16. Bạn có muốn sử dụng app ghi chép chi tiêu Tết không? <span class="required">*</span></label>
+                        <div class="options">
+                            <label class="option"><input type="radio" name="want_app" value="very_much" required> <span>Rất muốn</span></label>
+                            <label class="option"><input type="radio" name="want_app" value="maybe"> <span>Có thể sẽ dùng</span></label>
+                            <label class="option"><input type="radio" name="want_app" value="not_sure"> <span>Không chắc</span></label>
+                            <label class="option"><input type="radio" name="want_app" value="no"> <span>Không muốn</span></label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-label">17. Tính năng nào QUAN TRỌNG NHẤT với bạn? <span class="required">*</span></label>
+                        <div class="options">
+                            <label class="option"><input type="checkbox" name="important_features" value="quick_entry"> <span>Ghi chép nhanh, dễ dùng</span></label>
+                            <label class="option"><input type="checkbox" name="important_features" value="auto_category"> <span>Phân loại tự động (4 nhóm Kakeibo)</span></label>
+                            <label class="option"><input type="checkbox" name="important_features" value="charts"> <span>Biểu đồ/thống kê trực quan</span></label>
+                            <label class="option"><input type="checkbox" name="important_features" value="budget_alert"> <span>Nhắc nhở/ngân sách</span></label>
+                            <label class="option"><input type="checkbox" name="important_features" value="sharing"> <span>Chia sẻ/đồng bộ gia đình</span></label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-label">18. Bạn thích thiết kế app như thế nào? <span class="required">*</span></label>
+                        <div class="options">
+                            <label class="option"><input type="radio" name="design_preference" value="simple" required> <span>Đơn giản, tập trung chức năng</span></label>
+                            <label class="option"><input type="radio" name="design_preference" value="beautiful"> <span>Đẹp mắt, nhiều hiệu ứng</span></label>
+                            <label class="option"><input type="radio" name="design_preference" value="balanced"> <span>Cân bằng cả hai</span></label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-label">19. Bạn có sẵn lòng trả phí cho app không? <span class="required">*</span></label>
+                        <div class="options">
+                            <label class="option"><input type="radio" name="willing_to_pay" value="yes" required> <span>Có, nếu tốt sẽ mua</span></label>
+                            <label class="option"><input type="radio" name="willing_to_pay" value="free_with_ads"> <span>Thích dùng miễn phí + quảng cáo</span></label>
+                            <label class="option"><input type="radio" name="willing_to_pay" value="trial"> <span>Thích dùng thử trước</span></label>
+                            <label class="option"><input type="radio" name="willing_to_pay" value="no"> <span>Không trả phí</span></label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PHẦN 6: MỞ RỘNG -->
+                <div class="question-section" data-section="6">
+                    <div class="section-title">💬 Phần 6: Mở rộng</div>
+
+                    <div class="question">
+                        <label class="question-label">20. Điều gì KHÓ KHĂN NHẤT khi quản lý chi tiêu Tết?</label>
+                        <div class="question-hint">Vui lòng chia sẻ ý kiến của bạn</div>
+                        <textarea name="biggest_challenge" placeholder="Ví dụ: Không biết tiền mình đi đâu, hay quên ghi chép, cám dỗ mua sắm quá nhiều..."></textarea>
+                    </div>
+
+                    <div class="question">
+                        <label class="question-label">21. Bạn có muốn tham gia BETA TEST ứng dụng Sổ Quỹ Việt không? <span class="required">*</span></label>
+                        <div class="options">
+                            <label class="option"><input type="radio" name="beta_test" value="yes" required> <span>Có, tôi sẽ để lại email bên dưới</span></label>
+                            <label class="option"><input type="radio" name="beta_test" value="no"> <span>Không</span></label>
+                            <label class="option"><input type="radio" name="beta_test" value="maybe"> <span>Có thể sau</span></label>
+                        </div>
+                    </div>
+
+                    <div class="question" id="emailQuestion" style="display: none;">
+                        <label class="question-label">Email liên hệ của bạn:</label>
+                        <input type="email" name="email" placeholder="email@example.com">
+                    </div>
+                </div>
+
+                <!-- SUCCESS MESSAGE -->
+                <div class="success-message" id="successMessage" style="display: none;">
+                    <div class="emoji">🎊</div>
+                    <h2>Cảm ơn bạn đã tham gia khảo sát!</h2>
+                    <p>Dữ liệu của bạn sẽ giúp chúng tôi xây dựng ứng dụng Sổ Quỹ Việt tốt hơn.<br>Hẹn gặp lại bạn trong bản BETA sắp tới!</p>
+                </div>
+
+                <!-- NAVIGATION BUTTONS -->
+                <div class="buttons" id="navButtons">
+                    <button type="button" class="btn-prev" id="prevBtn" onclick="prevSection()" style="display: none;">Quay lại</button>
+                    <button type="button" class="btn-next" id="nextBtn" onclick="nextSection()">Tiếp tục</button>
+                    <button type="submit" class="btn-submit" id="submitBtn" style="display: none;">Gửi khảo sát 🎉</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="footer">
+            © 2025 Sổ Quỹ Việt - Dự án ứng dụng Kakeibo Việt hóa<br>
+            <a href="#" style="color: #E91E63; text-decoration: none;">GitHub</a> • <a href="#" style="color: #E91E63; text-decoration: none;">Liên hệ</a>
+        </div>
+    </div>
+
+    <script>
+        let currentSection = 1;
+        const totalSections = 6;
+
+        // Update slider display
+        function updateSlider(type) {
+            const slider = document.getElementById(type + 'Slider');
+            const valueDisplay = document.getElementById(type + 'Value');
+            valueDisplay.textContent = slider.value + '%';
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            const progress = ((currentSection - 1) / totalSections) * 100;
+            document.getElementById('progress').style.width = progress + '%';
+        }
+
+        // Show/hide sections
+        function showSection(sectionNum) {
+            document.querySelectorAll('.question-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelector(`[data-section="${sectionNum}"]`).classList.add('active');
+            updateProgress();
+        }
+
+        // Validate current section
+        function validateSection(sectionNum) {
+            const currentSectionEl = document.querySelector(`[data-section="${sectionNum}"]`);
+            const requiredInputs = currentSectionEl.querySelectorAll('input[required], select[required]');
+            let isValid = true;
+
+            requiredInputs.forEach(input => {
+                if (input.type === 'radio') {
+                    const radios = currentSectionEl.querySelectorAll(`input[name="${input.name}"]`);
+                    const isChecked = Array.from(radios).some(radio => radio.checked);
+                    if (!isChecked) {
+                        isValid = false;
+                        radios[0].closest('.options').style.border = '2px solid #f44336';
+                    } else {
+                        radios[0].closest('.options').style.border = 'none';
+                    }
+                } else if (input.type === 'checkbox') {
+                    // For checkboxes, at least one should be checked if required
+                    const checkboxes = currentSectionEl.querySelectorAll(`input[name="${input.name}"]`);
+                    const isChecked = Array.from(checkboxes).some(cb => cb.checked);
+                    if (!isChecked) {
+                        isValid = false;
+                        checkboxes[0].closest('.options').style.border = '2px solid #f44336';
+                    } else {
+                        checkboxes[0].closest('.options').style.border = 'none';
+                    }
+                }
+            });
+
+            return isValid;
+        }
+
+        // Next section
+        function nextSection() {
+            if (!validateSection(currentSection)) {
+                alert('Vui lòng trả lời tất cả câu hỏi bắt buộc!');
+                return;
+            }
+
+            if (currentSection < totalSections) {
+                currentSection++;
+                showSection(currentSection);
+                updateButtons();
+            }
+        }
+
+        // Previous section
+        function prevSection() {
+            if (currentSection > 1) {
+                currentSection--;
+                showSection(currentSection);
+                updateButtons();
+            }
+        }
+
+        // Update buttons visibility
+        function updateButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const submitBtn = document.getElementById('submitBtn');
+
+            prevBtn.style.display = currentSection > 1 ? 'block' : 'none';
+
+            if (currentSection === totalSections) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'block';
+            } else {
+                nextBtn.style.display = 'block';
+                submitBtn.style.display = 'none';
+            }
+        }
+
+        // Beta test email toggle
+        document.querySelectorAll('input[name="beta_test"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.getElementById('emailQuestion').style.display =
+                    this.value === 'yes' ? 'block' : 'none';
+            });
+        });
+
+        // Form submission
+        document.getElementById('surveyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Collect form data
+            const formData = new FormData(this);
+            const data = {};
+            formData.forEach((value, key) => {
+                if (data[key]) {
+                    if (Array.isArray(data[key])) {
+                        data[key].push(value);
+                    } else {
+                        data[key] = [data[key], value];
+                    }
+                } else {
+                    data[key] = value;
+                }
+            });
+
+            // Add timestamp
+            data.submitted_at = new Date().toISOString();
+
+            // Log data (in production, send to server)
+            console.log('Survey data:', data);
+
+            // Save to localStorage as backup
+            const submissions = JSON.parse(localStorage.getItem('survey_submissions') || '[]');
+            submissions.push(data);
+            localStorage.setItem('survey_submissions', JSON.stringify(submissions));
+
+            // Show success message
+            document.getElementById('navButtons').style.display = 'none';
+            document.querySelectorAll('.question-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById('successMessage').style.display = 'block';
+            document.getElementById('progress').style.width = '100%';
+        });
+
+        // Initialize
+        updateProgress();
+    </script>
+</body>
+</html>

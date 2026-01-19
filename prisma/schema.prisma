@@ -1,0 +1,173 @@
+// Prisma Schema for Sổ Quỹ Việt
+// SQLite-compatible version
+// Run: npx prisma migrate dev --name init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Enums for SQLite (using String with validation in app)
+// KakeiboType: NEED | WANT | SHOULD | CAN
+// PeriodType: WEEKLY | MONTHLY | TET | CUSTOM
+
+// Models
+model User {
+  id                   String    @id @default(uuid())
+  email                String    @unique
+  passwordHash         String    @map("password_hash")
+  fullName             String?   @map("full_name")
+  phone                String?
+  avatarUrl            String?   @map("avatar_url")
+  currency             String    @default("VND")
+  timezone             String    @default("Asia/Ho_Chi_Minh")
+  language             String    @default("vi")
+
+  // Budget settings
+  monthlyBudget        Decimal   @default(0) @map("monthly_budget")
+  budgetAlertEnabled   Boolean   @default(true) @map("budget_alert_enabled")
+  budgetAlertThreshold Decimal   @default(80) @map("budget_alert_threshold")
+
+  // Timestamps
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  lastLoginAt DateTime? @map("last_login_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  // Relations
+  expenses   Expense[]
+  budgets    Budget[]
+  categories Category[]
+
+  @@map("users")
+}
+
+model Category {
+  id         String     @id @default(uuid())
+  userId     String?    @map("user_id")
+  user       User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Kakeibo classification (NEED | WANT | SHOULD | CAN)
+  kakeiboType String @map("kakeibo_type")
+
+  // Category info
+  name       String
+  nameEn     String?     @map("name_en")
+  icon       String?
+  color      String      @default("#E53935")
+  isSystem   Boolean     @default(false) @map("is_system")
+
+  // Display
+  displayOrder Int       @default(0) @map("display_order")
+
+  // Timestamps
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  // Relations
+  expenses Expense[]
+
+  @@index([userId])
+  @@index([kakeiboType])
+  @@map("categories")
+}
+
+model Expense {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  categoryId  String   @map("category_id")
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  // Amount
+  amount      Decimal
+  currency    String   @default("VND")
+
+  // Description
+  title       String
+  notes       String?
+  tags        String?  // JSON string for SQLite compatibility
+
+  // Location (optional)
+  locationName String?  @map("location_name")
+  latitude     Decimal?
+  longitude    Decimal?
+
+  // Evidence
+  receiptUrl   String?  @map("receipt_url")
+
+  // Timestamps
+  occurredAt  DateTime @default(now()) @map("occurred_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  @@index([userId])
+  @@index([categoryId])
+  @@index([occurredAt(sort: Desc)])
+  @@index([userId, occurredAt(sort: Desc)])
+  @@map("expenses")
+}
+
+model Budget {
+  id          String     @id @default(uuid())
+  userId      String     @map("user_id")
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Budget info
+  name        String
+  // Period type (WEEKLY | MONTHLY | TET | CUSTOM)
+  periodType  String @map("period_type")
+  startDate   DateTime   @map("start_date")
+  endDate     DateTime?  @map("end_date")
+
+  // Budget amounts by Kakeibo type
+  needAmount   Decimal @default(0) @map("need_amount")
+  wantAmount   Decimal @default(0) @map("want_amount")
+  shouldAmount Decimal @default(0) @map("should_amount")
+  canAmount    Decimal @default(0) @map("can_amount")
+
+  // Status
+  isActive    Boolean @default(true) @map("is_active")
+  isCompleted Boolean @default(false) @map("is_completed")
+
+  // Timestamps
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  // Relations
+  items BudgetItem[]
+
+  @@index([userId])
+  @@index([startDate, endDate])
+  @@index([userId, isActive])
+  @@map("budgets")
+}
+
+model BudgetItem {
+  id             String  @id @default(uuid())
+  budgetId       String  @map("budget_id")
+  budget         Budget  @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+
+  categoryId     String? @map("category_id")
+  name           String
+  plannedAmount  Decimal @map("planned_amount")
+  actualAmount   Decimal @default(0) @map("actual_amount")
+
+  displayOrder   Int     @default(0) @map("display_order")
+
+  // Timestamps
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@index([budgetId])
+  @@map("budget_items")
+}

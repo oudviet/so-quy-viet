@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghi chép chi tiêu - Sổ Quỹ Việt</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Summary Cards */
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            padding: 15px;
+            background: #fafafa;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            border-left: 4px solid;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .summary-card.need { border-color: #E53935; }
+        .summary-card.want { border-color: #FB8C00; }
+        .summary-card.should { border-color: #43A047; }
+        .summary-card.can { border-color: #1E88E5; }
+
+        .summary-card .label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .summary-card .amount {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* Form */
+        .form {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .amount-input {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .quick-amounts {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .quick-amount {
+            padding: 10px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .quick-amount:hover {
+            background: #e0e0e0;
+        }
+
+        /* Category Select */
+        .category-select {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .category-option {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .category-option:hover {
+            border-color: #667eea;
+            background: #f8f8ff;
+        }
+
+        .category-option.selected {
+            border-color: #667eea;
+            background: #f0f0ff;
+        }
+
+        .category-option .emoji {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .category-option .name {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Subcategories */
+        .subcategory-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .subcategory {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .subcategory:hover {
+            border-color: #667eea;
+        }
+
+        .subcategory.selected {
+            border-color: #667eea;
+            background: #f0f0ff;
+        }
+
+        .subcategory .emoji {
+            font-size: 18px;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Recent Expenses */
+        .recent {
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .recent h2 {
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .expense-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .expense-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #fafafa;
+            border-radius: 10px;
+            border-left: 4px solid;
+        }
+
+        .expense-item .icon {
+            font-size: 24px;
+            margin-right: 12px;
+        }
+
+        .expense-item .info {
+            flex: 1;
+        }
+
+        .expense-item .title {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .expense-item .time {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .expense-item .amount {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+        }
+
+        /* Success message */
+        .success {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            display: none;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📝 Ghi chép chi tiêu</h1>
+            <p>Sổ Quỹ Việt - Kakeibo</p>
+        </div>
+
+        <!-- Summary -->
+        <div class="summary" id="summary">
+            <div class="summary-card need">
+                <div class="label">🔴 CẦN</div>
+                <div class="amount" id="need-amount">0đ</div>
+            </div>
+            <div class="summary-card want">
+                <div class="label">🟡 MUỐN</div>
+                <div class="amount" id="want-amount">0đ</div>
+            </div>
+            <div class="summary-card should">
+                <div class="label">🟢 NÊN</div>
+                <div class="amount" id="should-amount">0đ</div>
+            </div>
+            <div class="summary-card can">
+                <div class="label">🔵 CÓ THỂ</div>
+                <div class="amount" id="can-amount">0đ</div>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <div class="form">
+            <!-- Amount -->
+            <div class="form-group">
+                <label class="form-label">💰 Số tiền</label>
+                <input type="number" id="amount" class="form-input amount-input" placeholder="0">
+                <div class="quick-amounts">
+                    <button type="button" class="quick-amount" onclick="setAmount(10000)">10k</button>
+                    <button type="button" class="quick-amount" onclick="setAmount(20000)">20k</button>
+                    <button type="button" class="quick-amount" onclick="setAmount(50000)">50k</button>
+                    <button type="button" class="quick-amount" onclick="setAmount(100000)">100k</button>
+                    <button type="button" class="quick-amount" onclick="setAmount(200000)">200k</button>
+                    <button type="button" class="quick-amount" onclick="setAmount(500000)">500k</button>
+                </div>
+            </div>
+
+            <!-- Title -->
+            <div class="form-group">
+                <label class="form-label">📝 Nội dung</label>
+                <input type="text" id="title" class="form-input" placeholder="Ví dụ: Trà sữa Full Topping">
+            </div>
+
+            <!-- Category Type -->
+            <div class="form-group">
+                <label class="form-label">🎯 Phân loại Kakeibo</label>
+                <div class="category-select">
+                    <div class="category-option" data-type="NEED" onclick="selectKakeiboType('NEED')">
+                        <div class="emoji">🔴</div>
+                        <div class="name">CẦN</div>
+                    </div>
+                    <div class="category-option" data-type="WANT" onclick="selectKakeiboType('WANT')">
+                        <div class="emoji">🟡</div>
+                        <div class="name">MUỐN</div>
+                    </div>
+                    <div class="category-option" data-type="SHOULD" onclick="selectKakeiboType('SHOULD')">
+                        <div class="emoji">🟢</div>
+                        <div class="name">NÊN</div>
+                    </div>
+                    <div class="category-option" data-type="CAN" onclick="selectKakeiboType('CAN')">
+                        <div class="emoji">🔵</div>
+                        <div class="name">CÓ THỂ</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subcategory -->
+            <div class="form-group" id="subcategory-group" style="display:none;">
+                <label class="form-label">📂 Chi tiết</label>
+                <div class="subcategory-grid" id="subcategory-grid"></div>
+            </div>
+
+            <!-- Notes -->
+            <div class="form-group">
+                <label class="form-label">📝 Ghi chú (tùy chọn)</label>
+                <textarea id="notes" class="form-input" rows="2" placeholder="Thêm ghi chú..."></textarea>
+            </div>
+
+            <!-- Submit -->
+            <button type="button" class="submit-btn" onclick="saveExpense()">💾 Lưu chi tiêu</button>
+        </div>
+
+        <!-- Recent Expenses -->
+        <div class="recent">
+            <h2>📋 Ghi chép gần đây</h2>
+            <div class="expense-list" id="expense-list">
+                <div class="loading">Đang tải...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Message -->
+    <div class="success" id="success">✅ Đã lưu chi tiêu!</div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        let categories = [];
+        let selectedKakeiboType = null;
+        let selectedCategoryId = null;
+
+        // Load categories on page load
+        async function loadCategories() {
+            try {
+                const response = await fetch(`${API_URL}/categories`);
+                categories = await response.json();
+            } catch (error) {
+                console.error('Failed to load categories:', error);
+            }
+        }
+
+        // Load summary
+        async function loadSummary() {
+            try {
+                const response = await fetch(`${API_URL}/summary`);
+                const summary = await response.json();
+
+                document.getElementById('need-amount').textContent = formatAmount(summary.NEED.amount);
+                document.getElementById('want-amount').textContent = formatAmount(summary.WANT.amount);
+                document.getElementById('should-amount').textContent = formatAmount(summary.SHOULD.amount);
+                document.getElementById('can-amount').textContent = formatAmount(summary.CAN.amount);
+            } catch (error) {
+                console.error('Failed to load summary:', error);
+            }
+        }
+
+        // Load recent expenses
+        async function loadExpenses() {
+            try {
+                const response = await fetch(`${API_URL}/expenses`);
+                const expenses = await response.json();
+
+                const listEl = document.getElementById('expense-list');
+
+                if (expenses.length === 0) {
+                    listEl.innerHTML = '<div class="loading">Chưa có ghi chép nào</div>';
+                    return;
+                }
+
+                listEl.innerHTML = expenses.map(exp => {
+                    const color = getCategoryColor(exp.category.kakeiboType);
+                    const time = new Date(exp.occurredAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+                    return `
+                        <div class="expense-item" style="border-color: ${color}">
+                            <div class="icon">${exp.category.icon}</div>
+                            <div class="info">
+                                <div class="title">${exp.title}</div>
+                                <div class="time">${time}</div>
+                            </div>
+                            <div class="amount">${formatAmount(exp.amount)}</div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Failed to load expenses:', error);
+            }
+        }
+
+        // Set amount from quick buttons
+        function setAmount(value) {
+            document.getElementById('amount').value = value;
+        }
+
+        // Select Kakeibo type
+        function selectKakeiboType(type) {
+            selectedKakeiboType = type;
+
+            // Update UI
+            document.querySelectorAll('.category-option').forEach(el => {
+                el.classList.remove('selected');
+                if (el.dataset.type === type) {
+                    el.classList.add('selected');
+                }
+            });
+
+            // Show subcategories
+            const subcategories = categories.filter(c => c.kakeiboType === type);
+            const subcategoryGrid = document.getElementById('subcategory-grid');
+            const subcategoryGroup = document.getElementById('subcategory-group');
+
+            if (subcategories.length > 0) {
+                subcategoryGroup.style.display = 'block';
+                subcategoryGrid.innerHTML = subcategories.map(cat => `
+                    <div class="subcategory" onclick="selectCategory('${cat.id}', '${cat.icon}')">
+                        <div class="emoji">${cat.icon}</div>
+                        <div>${cat.name}</div>
+                    </div>
+                `).join('');
+            } else {
+                subcategoryGroup.style.display = 'none';
+            }
+        }
+
+        // Select category
+        function selectCategory(id, icon) {
+            selectedCategoryId = id;
+
+            document.querySelectorAll('.subcategory').forEach(el => {
+                el.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+        }
+
+        // Save expense
+        async function saveExpense() {
+            const amount = document.getElementById('amount').value;
+            const title = document.getElementById('title').value;
+            const notes = document.getElementById('notes').value;
+
+            if (!amount || !title) {
+                alert('Vui lòng nhập số tiền và nội dung!');
+                return;
+            }
+
+            if (!selectedCategoryId) {
+                alert('Vui lòng chọn phân loại!');
+                return;
+            }
+
+            try {
+                await fetch(`${API_URL}/expenses`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount: parseFloat(amount),
+                        title,
+                        categoryId: selectedCategoryId,
+                        notes,
+                        occurredAt: new Date().toISOString()
+                    })
+                });
+
+                // Show success message
+                const successEl = document.getElementById('success');
+                successEl.style.display = 'block';
+                setTimeout(() => successEl.style.display = 'none', 2000);
+
+                // Reset form
+                document.getElementById('amount').value = '';
+                document.getElementById('title').value = '';
+                document.getElementById('notes').value = '';
+                selectedKakeiboType = null;
+                selectedCategoryId = null;
+                document.querySelectorAll('.category-option').forEach(el => el.classList.remove('selected'));
+                document.getElementById('subcategory-group').style.display = 'none';
+
+                // Reload data
+                loadSummary();
+                loadExpenses();
+
+            } catch (error) {
+                console.error('Failed to save expense:', error);
+                alert('Có lỗi xảy ra. Vui lòng thử lại!');
+            }
+        }
+
+        // Format amount
+        function formatAmount(amount) {
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND'
+            }).format(amount);
+        }
+
+        // Get category color
+        function getCategoryColor(type) {
+            const colors = {
+                'NEED': '#E53935',
+                'WANT': '#FB8C00',
+                'SHOULD': '#43A047',
+                'CAN': '#1E88E5'
+            };
+            return colors[type] || '#888';
+        }
+
+        // Initialize
+        loadCategories();
+        loadSummary();
+        loadExpenses();
+    </script>
+</body>
+</html>

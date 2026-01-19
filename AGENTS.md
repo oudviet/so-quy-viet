@@ -38,3 +38,7 @@ bd sync               # Sync with git
 - NEVER say "ready to push when you are" - YOU must push
 - If push fails, resolve and retry until it succeeds
 
+
+## 🧠 IMPORTANT
+- CLAUDE.md contains workflow instructions
+- Always check this file after git pull
