@@ -10,6 +10,9 @@ import initCommand from './commands/init.js';
 import addCommand from './commands/add.js';
 import summaryCommand from './commands/summary.js';
 import listCommand from './commands/list.js';
+import deleteCommand from './commands/delete.js';
+import editCommand from './commands/edit.js';
+import exportCommand from './commands/export.js';
 
 const program = new Command();
 
@@ -24,6 +27,9 @@ program.addCommand(initCommand);
 program.addCommand(addCommand);
 program.addCommand(summaryCommand);
 program.addCommand(listCommand);
+program.addCommand(deleteCommand);
+program.addCommand(editCommand);
+program.addCommand(exportCommand);
 
 // Parse arguments
 program.parse();

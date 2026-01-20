@@ -239,6 +239,103 @@ export async function getExpensesByKakeiboType(userId, startDate, endDate = null
 }
 
 /**
+ * Delete expense
+ */
+export async function deleteExpense(id, userId) {
+  try {
+    // Verify user owns this expense
+    const expense = await prisma.expense.findFirst({
+      where: {
+        id,
+        userId,
+      },
+    });
+
+    if (!expense) {
+      throw new Error('Không tìm thấy chi tiêu này');
+    }
+
+    await prisma.expense.delete({
+      where: { id },
+    });
+
+    return true;
+  } catch (error) {
+    console.error('❌ Lỗi xóa expense:', error.message);
+    throw error;
+  }
+}
+
+/**
+ * Update expense
+ */
+export async function updateExpense(id, userId, updates) {
+  try {
+    // Verify user owns this expense
+    const expense = await prisma.expense.findFirst({
+      where: {
+        id,
+        userId,
+      },
+    });
+
+    if (!expense) {
+      throw new Error('Không tìm thấy chi tiêu này');
+    }
+
+    // If updating kakeibo type, change category
+    if (updates.kakeiboType) {
+      const category = await prisma.category.findFirst({
+        where: {
+          kakeiboType: updates.kakeiboType,
+          userId: null,
+        },
+      });
+
+      if (!category) {
+        throw new Error(`Không tìm thấy phân loại ${updates.kakeiboType}`);
+      }
+
+      updates.categoryId = category.id;
+      delete updates.kakeiboType;
+    }
+
+    const updated = await prisma.expense.update({
+      where: { id },
+      data: updates,
+    });
+
+    return updated;
+  } catch (error) {
+    console.error('❌ Lỗi cập nhật expense:', error.message);
+    throw error;
+  }
+}
+
+/**
+ * Get expenses for a date range
+ */
+export async function getExpensesByDateRange(userId, startDate, endDate) {
+  const expenses = await prisma.expense.findMany({
+    where: {
+      userId,
+      occurredAt: {
+        gte: startDate,
+        lte: endDate,
+      },
+    },
+    include: {
+      category: true,
+    },
+    orderBy: {
+      occurredAt: 'desc',
+    },
+  });
+
+  return expenses;
+}
+
+/**
  * Disconnect database
  */
 export async function disconnectDatabase() {
